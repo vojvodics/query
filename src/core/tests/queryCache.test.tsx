@@ -57,7 +57,7 @@ describe('queryCache', () => {
     }).not.toThrow()
   })
 
-  // https://github.com/tannerlinsley/react-query/issues/652
+  // https://github.com/TanStack/query/issues/652
   test('fetchQueryData should not retry by default', async () => {
     const consoleMock = mockConsoleError()
 

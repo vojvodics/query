@@ -25,7 +25,7 @@ export default [
     input: inputSrc,
     output: {
       name: 'ReactQuery',
-      file: 'dist/react-query.development.js',
+      file: 'dist/query.development.js',
       format: 'umd',
       sourcemap: true,
       globals,
@@ -42,7 +42,7 @@ export default [
     input: inputSrc,
     output: {
       name: 'ReactQuery',
-      file: 'dist/react-query.production.min.js',
+      file: 'dist/query.production.min.js',
       format: 'umd',
       sourcemap: true,
       globals,

@@ -282,7 +282,7 @@ export class QueryClient {
   ): Promise<TData> {
     const parsedOptions = parseQueryArgs(arg1, arg2, arg3)
 
-    // https://github.com/tannerlinsley/react-query/issues/652
+    // https://github.com/TanStack/query/issues/652
     if (typeof parsedOptions.retry === 'undefined') {
       parsedOptions.retry = false
     }
