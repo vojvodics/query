@@ -1,5 +1,15 @@
 /* istanbul ignore file */
 
+export interface Register {
+  // defaultError: Error
+}
+
+export type DefaultError = Register extends {
+  defaultError: infer TDefaultError
+}
+  ? TDefaultError
+  : Error
+
 export { CancelledError } from './retryer'
 export { QueryCache } from './queryCache'
 export { QueryClient } from './queryClient'
