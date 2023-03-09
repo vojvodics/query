@@ -10,7 +10,7 @@ import type {
 } from '@tanstack/query-core'
 import { useBaseQuery } from './useBaseQuery'
 import type { UseBaseQueryReturnType } from './useBaseQuery'
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefDeep, MaybeRef } from './types'
 import type { QueryClient } from './queryClient'
 
 export type UseQueryOptions<
@@ -69,15 +69,11 @@ export function useQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UseQueryOptions<
-    TQueryFnData,
-    TError,
-    TData,
-    TQueryFnData,
-    TQueryKey
-  > & {
-    initialData?: undefined
-  },
+  options: MaybeRef<
+    UseQueryOptions<TQueryFnData, TError, TData, TQueryFnData, TQueryKey> & {
+      initialData?: undefined
+    }
+  >,
   queryClient?: QueryClient,
 ): UseQueryReturnType<TData, TError>
 
@@ -87,15 +83,11 @@ export function useQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UseQueryOptions<
-    TQueryFnData,
-    TError,
-    TData,
-    TQueryFnData,
-    TQueryKey
-  > & {
-    initialData: TQueryFnData | (() => TQueryFnData)
-  },
+  options: MaybeRef<
+    UseQueryOptions<TQueryFnData, TError, TData, TQueryFnData, TQueryKey> & {
+      initialData: TQueryFnData | (() => TQueryFnData)
+    }
+  >,
   queryClient?: QueryClient,
 ): UseQueryDefinedReturnType<TData, TError>
 
@@ -105,12 +97,8 @@ export function useQuery<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(
-  options: UseQueryOptions<
-    TQueryFnData,
-    TError,
-    TData,
-    TQueryFnData,
-    TQueryKey
+  options: MaybeRef<
+    UseQueryOptions<TQueryFnData, TError, TData, TQueryFnData, TQueryKey>
   >,
   queryClient?: QueryClient,
 ):

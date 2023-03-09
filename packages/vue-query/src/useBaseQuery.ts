@@ -12,13 +12,14 @@ import type {
   QueryObserver,
   QueryKey,
   QueryObserverResult,
-  DefaultedQueryObserverOptions,
+  QueryObserverOptions,
 } from '@tanstack/query-core'
 import { useQueryClient } from './useQueryClient'
 import { updateState, cloneDeepUnref } from './utils'
 import type { QueryClient } from './queryClient'
 import type { UseQueryOptions } from './useQuery'
 import type { UseInfiniteQueryOptions } from './useInfiniteQuery'
+import type { MaybeRef } from './types'
 
 export type UseBaseQueryReturnType<
   TData,
@@ -55,13 +56,15 @@ export function useBaseQuery<
   TPageParam,
 >(
   Observer: typeof QueryObserver,
-  options: UseQueryOptionsGeneric<
-    TQueryFnData,
-    TError,
-    TData,
-    TQueryData,
-    TQueryKey,
-    TPageParam
+  options: MaybeRef<
+    UseQueryOptionsGeneric<
+      TQueryFnData,
+      TError,
+      TData,
+      TQueryData,
+      TQueryKey,
+      TPageParam
+    >
   >,
   queryClient?: QueryClient,
 ): UseBaseQueryReturnType<TData, TError> {
@@ -69,14 +72,14 @@ export function useBaseQuery<
 
   const defaultedOptions = computed(() => {
     const defaulted = client.defaultQueryOptions(
-      cloneDeepUnref(options as any),
-    ) as DefaultedQueryObserverOptions<
-      TQueryFnData,
-      TError,
-      TData,
-      TQueryData,
-      TQueryKey
-    >
+      cloneDeepUnref(options as any) as QueryObserverOptions<
+        TQueryFnData,
+        TError,
+        TData,
+        TQueryData,
+        TQueryKey
+      >,
+    )
 
     defaulted._optimisticResults = client.isRestoring.value
       ? 'isRestoring'
@@ -95,7 +98,6 @@ export function useBaseQuery<
   watch(
     client.isRestoring,
     (isRestoring) => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!isRestoring) {
         unsubscribe.value()
         unsubscribe.value = observer.subscribe((result) => {

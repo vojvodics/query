@@ -12,7 +12,7 @@ import type {
 import { useBaseQuery } from './useBaseQuery'
 import type { UseBaseQueryReturnType } from './useBaseQuery'
 
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefDeep, MaybeRef } from './types'
 import type { QueryClient } from './queryClient'
 import type { UnwrapRef } from 'vue-demi'
 
@@ -79,19 +79,17 @@ export function useInfiniteQuery<
   TQueryKey extends QueryKey = QueryKey,
   TPageParam = unknown,
 >(
-  options: UseInfiniteQueryOptions<
+  options: MaybeRef<UseInfiniteQueryOptions<
     TQueryFnData,
     TError,
     TData,
     TQueryFnData,
     TQueryKey,
     TPageParam
-  >,
+  >>,
   queryClient?: QueryClient,
 ): UseInfiniteQueryReturnType<TData, TError> {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const result = useBaseQuery(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     InfiniteQueryObserver as typeof QueryObserver,
     options,
     queryClient,
