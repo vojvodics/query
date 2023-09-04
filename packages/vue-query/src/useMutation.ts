@@ -8,7 +8,7 @@ import {
   watch,
 } from 'vue-demi'
 import { MutationObserver } from '@tanstack/query-core'
-import { cloneDeepUnref, shouldThrowError, updateState } from './utils'
+import { cloneDeepToValue, shouldThrowError, updateState } from './utils'
 import { useQueryClient } from './useQueryClient'
 import type { ToRefs } from 'vue-demi'
 import type {
@@ -18,7 +18,7 @@ import type {
   MutationObserverOptions,
   MutationObserverResult,
 } from '@tanstack/query-core'
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefOrGetterDeep } from './types'
 import type { QueryClient } from './queryClient'
 
 type MutationResult<TData, TError, TVariables, TContext> = DistributiveOmit<
@@ -31,7 +31,9 @@ export type UseMutationOptions<
   TError = DefaultError,
   TVariables = void,
   TContext = unknown,
-> = MaybeRefDeep<MutationObserverOptions<TData, TError, TVariables, TContext>>
+> = MaybeRefOrGetterDeep<
+  MutationObserverOptions<TData, TError, TVariables, TContext>
+>
 
 type MutateSyncFunction<
   TData = unknown,
@@ -60,7 +62,7 @@ export function useMutation<
   TVariables = void,
   TContext = unknown,
 >(
-  mutationOptions: MaybeRefDeep<
+  mutationOptions: MaybeRefOrGetterDeep<
     MutationObserverOptions<TData, TError, TVariables, TContext>
   >,
   queryClient?: QueryClient,
@@ -68,14 +70,14 @@ export function useMutation<
   if (process.env.NODE_ENV === 'development') {
     if (!getCurrentScope()) {
       console.warn(
-        'vue-query composables like "uesQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
+        'vue-query composables like "useQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
       )
     }
   }
 
   const client = queryClient || useQueryClient()
   const options = computed(() => {
-    return client.defaultMutationOptions(cloneDeepUnref(mutationOptions))
+    return client.defaultMutationOptions(cloneDeepToValue(mutationOptions))
   })
   const observer = new MutationObserver(client, options.value)
   const state = reactive(observer.getCurrentResult())

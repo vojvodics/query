@@ -12,7 +12,7 @@ import type {
 
 import type { UseBaseQueryReturnType } from './useBaseQuery'
 
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefOrGetterDeep } from './types'
 import type { QueryClient } from './queryClient'
 import type { UnwrapRef } from 'vue-demi'
 
@@ -40,7 +40,7 @@ export type UseInfiniteQueryOptions<
         UnwrapRef<TQueryKey>,
         TPageParam
       >[Property]
-    : MaybeRefDeep<
+    : MaybeRefOrGetterDeep<
         WithRequired<
           InfiniteQueryObserverOptions<
             TQueryFnData,

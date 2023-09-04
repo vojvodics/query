@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue-demi'
-import { cloneDeep, cloneDeepUnref, updateState } from '../utils'
+import { cloneDeep, cloneDeepToValue, updateState } from '../utils'
 
 describe('utils', () => {
   describe('updateState', () => {
@@ -110,19 +110,47 @@ describe('utils', () => {
     })
   })
 
-  describe('cloneDeepUnref', () => {
-    test('should unref primitives', () => {
-      expect(cloneDeepUnref(ref(34))).toBe(34)
-      expect(cloneDeepUnref(ref('mystr'))).toBe('mystr')
+  describe('cloneDeepToValue', () => {
+    test('should normalize primitives', () => {
+      expect(cloneDeepToValue(ref(34))).toBe(34)
+      expect(cloneDeepToValue(ref('mystr'))).toBe('mystr')
+      expect(cloneDeepToValue(() => 42)).toBe(42)
+      expect(cloneDeepToValue(() => 'mystr')).toBe('mystr')
     })
 
-    test('should deeply unref arrays', () => {
-      const val = ref([2, 3, ref(4), ref('5'), { a: ref(6) }, [ref(7)]])
-      const cp = cloneDeepUnref(val)
-      expect(cp).toStrictEqual([2, 3, 4, '5', { a: 6 }, [7]])
+    test('should deeply normalize arrays', () => {
+      const arr = [
+        2,
+        3,
+        ref(4),
+        ref('5'),
+        { a: ref(6) },
+        [ref(7)],
+        () => 8,
+        () => '9',
+        () => [10],
+        () => ({ a: 11 }),
+      ]
+      const refVal = ref(arr)
+      const getterVal = () => arr
+      expect(cloneDeepToValue(refVal)).toStrictEqual([
+        2,
+        3,
+        4,
+        '5',
+        { a: 6 },
+        [7],
+        8,
+        '9',
+        [10],
+        { a: 11 },
+      ])
+      expect(cloneDeepToValue(getterVal)).toStrictEqual(
+        cloneDeepToValue(refVal),
+      )
     })
 
-    test('should deeply unref objects', () => {
+    test('should deeply normalize objects', () => {
       const val = ref({
         a: 1,
         b: ref(2),
@@ -130,19 +158,28 @@ describe('utils', () => {
         d: {
           e: ref('e'),
         },
+        f: () => 'f',
+        g: [() => 'g1', () => 'g2'],
+        h: {
+          i: () => 'i',
+        },
       })
-      const cp = cloneDeepUnref(val)
+      const cp = cloneDeepToValue(val)
 
       expect(cp).toEqual({
         a: 1,
         b: 2,
         c: ['c1', ['c2']],
         d: { e: 'e' },
+        f: 'f',
+        g: ['g1', 'g2'],
+        h: { i: 'i' },
       })
     })
 
-    test('should unref undefined', () => {
-      expect(cloneDeepUnref(ref(undefined))).toBe(undefined)
+    test('should normalize undefined', () => {
+      expect(cloneDeepToValue(ref(undefined))).toBe(undefined)
+      expect(cloneDeepToValue(() => undefined)).toBe(undefined)
     })
   })
 })

@@ -2,19 +2,19 @@ import { getCurrentScope, onScopeDispose, ref, watchSyncEffect } from 'vue-demi'
 import { useQueryClient } from './useQueryClient'
 import type { Ref } from 'vue-demi'
 import type { QueryFilters as QF } from '@tanstack/query-core'
-import type { MaybeRefDeep } from './types'
+import type { MaybeRefOrGetterDeep } from './types'
 import type { QueryClient } from './queryClient'
 
-export type QueryFilters = MaybeRefDeep<QF>
+export type QueryFilters = MaybeRefOrGetterDeep<QF>
 
 export function useIsFetching(
-  fetchingFilters: MaybeRefDeep<QF> = {},
+  fetchingFilters: MaybeRefOrGetterDeep<QF> = {},
   queryClient?: QueryClient,
 ): Ref<number> {
   if (process.env.NODE_ENV === 'development') {
     if (!getCurrentScope()) {
       console.warn(
-        'vue-query composables like "uesQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
+        'vue-query composables like "useQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
       )
     }
   }

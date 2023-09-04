@@ -1,21 +1,21 @@
 import { QueryCache as QC } from '@tanstack/query-core'
-import { cloneDeepUnref } from './utils'
+import { cloneDeepToValue } from './utils'
 import type {
   DefaultError,
   Query,
   QueryFilters,
   WithRequired,
 } from '@tanstack/query-core'
-import type { MaybeRefDeep } from './types'
+import type { MaybeRefOrGetterDeep } from './types'
 
 export class QueryCache extends QC {
   find<TQueryFnData = unknown, TError = DefaultError, TData = TQueryFnData>(
-    filters: MaybeRefDeep<WithRequired<QueryFilters, 'queryKey'>>,
+    filters: MaybeRefOrGetterDeep<WithRequired<QueryFilters, 'queryKey'>>,
   ): Query<TQueryFnData, TError, TData> | undefined {
-    return super.find(cloneDeepUnref(filters))
+    return super.find(cloneDeepToValue(filters))
   }
 
-  findAll(filters: MaybeRefDeep<QueryFilters> = {}): Array<Query> {
-    return super.findAll(cloneDeepUnref(filters))
+  findAll(filters: MaybeRefOrGetterDeep<QueryFilters> = {}): Array<Query> {
+    return super.findAll(cloneDeepToValue(filters))
   }
 }

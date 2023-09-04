@@ -6,8 +6,8 @@ import { QueryClient } from '../queryClient'
 
 vi.mock('@tanstack/query-core')
 
-const queryKeyRef = ['foo', ref('bar')]
-const queryKeyUnref = ['foo', 'bar']
+const queryKeyRef = ['foo', ref('bar'), () => 'baz']
+const queryKeyUnref = ['foo', 'bar', 'baz']
 
 const fn = () => 'mock'
 

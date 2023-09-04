@@ -10,7 +10,7 @@ import {
 } from 'vue-demi'
 
 import { useQueryClient } from './useQueryClient'
-import { cloneDeepUnref } from './utils'
+import { cloneDeepToValue } from './utils'
 import type { Ref } from 'vue-demi'
 import type {
   QueriesObserverOptions,
@@ -21,7 +21,7 @@ import type {
 } from '@tanstack/query-core'
 import type { UseQueryOptions } from './useQuery'
 import type { QueryClient } from './queryClient'
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefOrGetterDeep } from './types'
 
 // This defines the `UseQueryOptions` that are accepted in `QueriesOptions` & `GetOptions`.
 // `placeholderData` function does not have a parameter
@@ -169,7 +169,7 @@ export function useQueries<
     queries,
     ...options
   }: {
-    queries: MaybeRefDeep<UseQueriesOptionsArg<T>>
+    queries: MaybeRefOrGetterDeep<UseQueriesOptionsArg<T>>
     combine?: (result: UseQueriesResults<T>) => TCombinedResult
   },
   queryClient?: QueryClient,
@@ -177,7 +177,7 @@ export function useQueries<
   if (process.env.NODE_ENV === 'development') {
     if (!getCurrentScope()) {
       console.warn(
-        'vue-query composables like "uesQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
+        'vue-query composables like "useQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
       )
     }
   }
@@ -185,7 +185,7 @@ export function useQueries<
   const client = queryClient || useQueryClient()
 
   const defaultedQueries = computed(() =>
-    cloneDeepUnref(queries).map((queryOptions) => {
+    cloneDeepToValue(queries).map((queryOptions) => {
       const defaulted = client.defaultQueryOptions(queryOptions)
       defaulted._optimisticResults = client.isRestoring.value
         ? 'isRestoring'

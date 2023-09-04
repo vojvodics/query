@@ -1,13 +1,11 @@
-import type { Ref } from 'vue-demi'
+import type { MaybeRefOrGetter } from 'vue-demi'
 
-export type MaybeRef<T> = Ref<T> | T
-
-export type MaybeRefDeep<T> = MaybeRef<
+export type MaybeRefOrGetterDeep<T> = MaybeRefOrGetter<
   T extends Function
     ? T
     : T extends object
     ? {
-        [Property in keyof T]: MaybeRefDeep<T[Property]>
+        [Property in keyof T]: MaybeRefOrGetterDeep<T[Property]>
       }
     : T
 >

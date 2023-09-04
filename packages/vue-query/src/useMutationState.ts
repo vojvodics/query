@@ -7,7 +7,7 @@ import {
   watch,
 } from 'vue-demi'
 import { useQueryClient } from './useQueryClient'
-import { cloneDeepUnref } from './utils'
+import { cloneDeepToValue } from './utils'
 import type { DeepReadonly, Ref } from 'vue-demi'
 import type {
   DefaultError,
@@ -16,10 +16,10 @@ import type {
   MutationState,
 } from '@tanstack/query-core'
 import type { QueryClient } from './queryClient'
-import type { MaybeRefDeep } from './types'
+import type { MaybeRefOrGetterDeep } from './types'
 import type { MutationCache } from './mutationCache'
 
-export type MutationFilters = MaybeRefDeep<MF>
+export type MutationFilters = MaybeRefOrGetterDeep<MF>
 
 export function useIsMutating(
   filters: MutationFilters = {},
@@ -28,14 +28,14 @@ export function useIsMutating(
   if (process.env.NODE_ENV === 'development') {
     if (!getCurrentScope()) {
       console.warn(
-        'vue-query composables like "uesQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
+        'vue-query composables like "useQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
       )
     }
   }
 
   const client = queryClient || useQueryClient()
   const unreffedFilters = computed(() => ({
-    ...cloneDeepUnref(filters),
+    ...cloneDeepToValue(filters),
     status: 'pending' as const,
   }))
 
@@ -72,7 +72,7 @@ export function useMutationState<TResult = MutationState>(
   options: MutationStateOptions<TResult> = {},
   queryClient?: QueryClient,
 ): DeepReadonly<Ref<Array<TResult>>> {
-  const filters = computed(() => cloneDeepUnref(options.filters))
+  const filters = computed(() => cloneDeepToValue(options.filters))
   const mutationCache = (queryClient || useQueryClient()).getMutationCache()
   const state = ref(getResult(mutationCache, options)) as Ref<Array<TResult>>
   const unsubscribe = mutationCache.subscribe(() => {

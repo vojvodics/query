@@ -1,7 +1,15 @@
 import { isRef, unref } from 'vue-demi'
-import type { MaybeRefDeep } from './types'
+import type { MaybeRefOrGetterDeep } from './types'
 
 export const VUE_QUERY_CLIENT = 'VUE_QUERY_CLIENT'
+
+function isFunction(value: unknown): value is Function {
+  return typeof value === 'function'
+}
+
+function toValue<T>(value: MaybeRefOrGetterDeep<T>): MaybeRefOrGetterDeep<T> {
+  return isFunction(value) ? value() : unref(value)
+}
 
 export function getClientKey(key?: string) {
   const suffix = key ? `:${key}` : ''
@@ -18,13 +26,13 @@ export function updateState(
 }
 
 export function cloneDeep<T>(
-  value: MaybeRefDeep<T>,
-  customizer?: (val: MaybeRefDeep<T>) => T | undefined,
+  value: MaybeRefOrGetterDeep<T>,
+  customizer?: (val: MaybeRefOrGetterDeep<T>) => T | undefined,
 ): T {
   if (customizer) {
     const result = customizer(value)
     // If it's a ref of undefined, return undefined
-    if (result === undefined && isRef(value)) {
+    if (result === undefined && (isRef(value) || isFunction(value))) {
       return result as T
     }
     if (result !== undefined) {
@@ -47,10 +55,10 @@ export function cloneDeep<T>(
   return value as T
 }
 
-export function cloneDeepUnref<T>(obj: MaybeRefDeep<T>): T {
+export function cloneDeepToValue<T>(obj: MaybeRefOrGetterDeep<T>): T {
   return cloneDeep(obj, (val) => {
-    if (isRef(val)) {
-      return cloneDeepUnref(unref(val))
+    if (isRef(val) || isFunction(val)) {
+      return cloneDeepToValue(toValue(val))
     }
 
     return undefined

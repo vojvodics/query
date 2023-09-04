@@ -8,7 +8,7 @@ import {
   watch,
 } from 'vue-demi'
 import { useQueryClient } from './useQueryClient'
-import { cloneDeepUnref, shouldThrowError, updateState } from './utils'
+import { cloneDeepToValue, shouldThrowError, updateState } from './utils'
 import type { ToRefs } from 'vue-demi'
 import type {
   DefaultedQueryObserverOptions,
@@ -68,7 +68,7 @@ export function useBaseQuery<
   if (process.env.NODE_ENV === 'development') {
     if (!getCurrentScope()) {
       console.warn(
-        'vue-query composables like "uesQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
+        'vue-query composables like "useQuery()" should only be used inside a "setup()" function or a running effect scope. They might otherwise lead to memory leaks.',
       )
     }
   }
@@ -82,7 +82,7 @@ export function useBaseQuery<
       TData,
       TQueryData,
       TQueryKey
-    > = client.defaultQueryOptions(cloneDeepUnref(options as any))
+    > = client.defaultQueryOptions(cloneDeepToValue(options as any))
 
     defaulted._optimisticResults = client.isRestoring.value
       ? 'isRestoring'

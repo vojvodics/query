@@ -1,11 +1,11 @@
 import { MutationCache as MC } from '@tanstack/query-core'
-import { cloneDeepUnref } from './utils'
+import { cloneDeepToValue } from './utils'
 import type {
   DefaultError,
   Mutation,
   MutationFilters,
 } from '@tanstack/query-core'
-import type { MaybeRefDeep } from './types'
+import type { MaybeRefOrGetterDeep } from './types'
 
 export class MutationCache extends MC {
   find<
@@ -14,12 +14,14 @@ export class MutationCache extends MC {
     TVariables = any,
     TContext = unknown,
   >(
-    filters: MaybeRefDeep<MutationFilters>,
+    filters: MaybeRefOrGetterDeep<MutationFilters>,
   ): Mutation<TData, TError, TVariables, TContext> | undefined {
-    return super.find(cloneDeepUnref(filters))
+    return super.find(cloneDeepToValue(filters))
   }
 
-  findAll(filters: MaybeRefDeep<MutationFilters> = {}): Array<Mutation> {
-    return super.findAll(cloneDeepUnref(filters))
+  findAll(
+    filters: MaybeRefOrGetterDeep<MutationFilters> = {},
+  ): Array<Mutation> {
+    return super.findAll(cloneDeepToValue(filters))
   }
 }

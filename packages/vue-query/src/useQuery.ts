@@ -10,7 +10,7 @@ import type {
   WithRequired,
 } from '@tanstack/query-core'
 import type { UseBaseQueryReturnType } from './useBaseQuery'
-import type { DistributiveOmit, MaybeRefDeep } from './types'
+import type { DistributiveOmit, MaybeRefOrGetterDeep } from './types'
 import type { QueryClient } from './queryClient'
 
 export type UseQueryOptions<
@@ -34,7 +34,7 @@ export type UseQueryOptions<
         TQueryData,
         UnwrapRef<TQueryKey>
       >[Property]
-    : MaybeRefDeep<
+    : MaybeRefOrGetterDeep<
         WithRequired<
           QueryObserverOptions<
             TQueryFnData,
